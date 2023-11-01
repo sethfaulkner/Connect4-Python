@@ -32,7 +32,7 @@ size = (width, height)
 
 class Connect4:
 
-    def __init__(self, depth=5):
+    def __init__(self, depth=1):
         self.depth = depth
         self.board = np.zeros((ROW_COUNT, COLUMN_COUNT))
 
@@ -48,6 +48,8 @@ class Connect4:
 
     @staticmethod
     def is_valid_location(board, col):
+        if col is None:
+            return False
         return board[ROW_COUNT - 1][col] == 0
 
     @staticmethod
@@ -85,11 +87,11 @@ class Connect4:
             opp_piece = AI_PIECE
 
         if window.count(piece) == 4:
-            score += 100
+            score += 200
         elif window.count(piece) == 3 and window.count(EMPTY) == 1:
             score += 5
         elif window.count(piece) == 2 and window.count(EMPTY) == 2:
-            score += 2
+            score += 1
 
         if window.count(opp_piece) == 3 and window.count(EMPTY) == 1:
             score -= 4
@@ -110,11 +112,6 @@ class Connect4:
                 score += Connect4.evaluate_window(window, piece)
 
         return score
-
-    @staticmethod
-    def is_terminal_node(board):
-        return Connect4.winning_move(board, PLAYER_PIECE) or Connect4.winning_move(board, AI_PIECE) or len(
-            Connect4.get_valid_locations(board)) == 0
 
     @staticmethod
     def minimax(board, depth, alpha, beta, maximizing_player):
@@ -326,7 +323,8 @@ pygame.init()
 menu = pygame_menu.Menu('Connect 4 (In a square)', 500, 400, theme=pygame_menu.themes.THEME_DARK)
 menu.add.text_input('Name :', default=player_name, onchange=set_player_name)
 menu.add.selector('Difficulty :',
-                  [('5', 5), ('4', 4), ('3', 3), ('2', 2), ('1', 1)],
+                  [('1', 1), ('2', 2), ('3', 3), ('4', 4), ('5', 5)],
+                  default=0,
                   onchange=set_difficulty)
 menu.add.selector('Starting Player :',
                   [(player_name, PLAYER), ("Player 2", AI)],
